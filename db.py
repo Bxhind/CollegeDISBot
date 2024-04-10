@@ -14,9 +14,9 @@ with open("access.json") as file:
     access = json.load(file)
 ip = access["ip"]
 port = access["port"]
-username = ['username']
-password = ['password']
-hostname = ['hostname']
+username = access['username']
+password = access['password']
+hostname = access['hostname']
 
 class DataBase():
     def __init__(self, ip, port,  username, password, hostname):
@@ -29,6 +29,7 @@ class DataBase():
     
     async def connection(self):
         try:
+            print(f"{ip} \n {username}, {password}, {hostname}")
             connection = psycopg2.connect(
                 dbname = hostname,
                 user= username,
@@ -39,8 +40,8 @@ class DataBase():
             insp = inspect(engine)
             print(insp.get_table_names())
             connection.close()
-        except:
-            print("Can't establish connection to database, please try again, or fix the bug syka")
+        except Exception as e:
+            print(f"Can't establish connection to database, please try again, or fix the bug syka \n {e}")
             
     
     async def fetch_customer(self):
