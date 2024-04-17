@@ -1,6 +1,5 @@
 import json
 import sqlalchemy, psycopg2
-import disnake
 
 from sqlalchemy import (
     select,
@@ -45,7 +44,6 @@ class DataBase():
         except Exception as e:
             print(f"Can't establish connection to database, please try again, or fix the bug syka \n {e}")
             
-    
     async def fetch_customer(self):
         connection = psycopg2.connect(
                 dbname = hostname,
@@ -55,10 +53,29 @@ class DataBase():
         with connection.cursor() as cursor:
             cursor.execute("Select * from customer")
             all_customers = cursor.fetchall()
-            print(all_customers)
+            return all_customers
             
             
-    async def add_customer(self):
-        pass
-            
+    async def add_customer(self, name, surname, phone, carid):
+        connection = psycopg2.connect(
+                dbname = hostname,
+                user= username,
+                password= password,
+                host= ip)
+        with connection.cursor() as cursor:
+            cursor.execute(f'''INSERT INTO customer (name, surname, phone_humber, car_id)
+                        VALUES (%s, %s, %s, %s);''',
+                       (name, surname, phone, carid))
+        connection.commit()
     
+    async def query_cast(self, query):
+        connection = psycopg2.connect(
+                dbname = hostname,
+                user= username,
+                password= password,
+                host= ip)
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            query_res = cursor.fetchall()
+        return query_res
+
