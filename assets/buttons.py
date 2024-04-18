@@ -39,7 +39,22 @@ class MainButtons(disnake.ui.View):
         emoji= "🔅"
     )
     async def other_option(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
-        select = modals.Selection(bot= self.bot)
         view = disnake.ui.View()
         view.add_item(modals.Selection(bot= self.bot))
         await inter.send(view= view)
+        
+    
+class UpdateButton(disnake.ui.View):
+    def __init__(self, bot) -> None:
+        self.bot = bot
+        super().__init__(timeout= None)
+
+    
+    @button(
+        label= "UPDATE",
+        style= disnake.ButtonStyle.success,
+        emoji= "⚜️"
+    )
+    async def update(self, button: disnake.ui.Button, inter: disnake.MessageInteraction) -> None:
+        modal = modals.UpdateModal(bot = self.bot)
+        await inter.response.send_modal(modal= modal)
