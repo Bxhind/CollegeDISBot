@@ -4,7 +4,7 @@ from disnake.ui.action_row import ModalUIComponent
 from disnake.utils import MISSING
 from db import DataBase
 from disnake import TextInputStyle
-import buttons
+from assets import buttons
 
 
 class ModalAdd(disnake.ui.Modal):
@@ -110,6 +110,7 @@ class UpdateModal(disnake.ui.Modal):
         
         return await super().callback(inter)
 
+
 class searchUpdModal(disnake.ui.Modal):
     def __init__(self, bot) -> None:
         self.bot = bot
@@ -133,23 +134,25 @@ class searchUpdModal(disnake.ui.Modal):
             title= "Select to update",
             components= components,
             custom_id = "updatemod",
-            timeot = 300
+            timeout = 300
         )
     
     
     async def callback(self, inter: disnake.ModalInteraction) -> None:
         id = inter.text_values['id']
         name = inter.text_values['name']
+        view = buttons.UpdateButton(bot = self.bot)
         try:
-            finder = await DataBase.update_search(id, name)
+            finder = await DataBase.update_search(self, id, name)
             if finder:
-                view = buttons.UpdateButton(bot = self.bot)
-                await inter.send("Customer found \nPlease, use button to update", view= view)
+                finder_res = '\n'.join([str(row) for row in finder ])
+                await inter.send(f"Customer found: {finder_res}\nPlease, use button to update", view= view)
             else:
                 pass
         except Exception as e:
             await inter.send(f"Incorrect error: \nerror type: {e}")
         return await super().callback(inter)
+        
         
 class QueryModal(disnake.ui.Modal):
     def __init__(self, bot):
@@ -180,7 +183,7 @@ class QueryModal(disnake.ui.Modal):
                 result_str = "\n".join([str(row) for row in query_res])
                 await inter.send(f"Query complete! Result:\n{result_str}")
             else:
-                await inter.send("Query completed successfully")
+                await inter.send("Query is bad")
         except Exception as e:
             await inter.send("Something went wrong: "+str(e))
         return await super().callback(inter)
@@ -215,7 +218,8 @@ class Selection(disnake.ui.Select):
     async def callback(self, inter:disnake.MessageInteraction):
         value = inter.data['values'][0]
         if value == 'update':
-            pass
+            modal = searchUpdModal(bot= self.bot)
+            await inter.response.send_modal(modal= modal)
         if value == 'delete':
             pass
         if value == "custom":

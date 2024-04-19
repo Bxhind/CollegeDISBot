@@ -70,19 +70,20 @@ class DataBase():
         connection.commit()
         '''здесь надо написать функции поиска по полям id и имени в таблице customer
             далее дописать вызов второго модального окна и второй функции на сам апдейт'''
-    async def update_search(self, id, name): #доделать завтра
+    async def update_search(self, id, name):
         connection = psycopg2.connect(
-                dbname = hostname,
-                user= username,
-                password= password,
-                host= ip)
+            dbname=hostname,
+            user=username,
+            password=password,
+            host=ip
+        )
         with connection.cursor() as cursor:
-            cursor.execute(f"select * from customer where id == %s and name == %s", (id, name))
+            cursor.execute("SELECT * FROM customer WHERE id = %s AND name = %s", (id, name))
             result = cursor.fetchall()
         return result
     
     
-    async def update_cast(self, id, name,):
+    async def update_cast():
         pass
     
     async def query_cast(self, query):
